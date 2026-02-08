@@ -14,7 +14,9 @@ public class LaunchBrowserTest {
         try (Playwright playwright = Playwright.create()) {
 
 
-            Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
+           // Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
+            Browser browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(false));
+          // Browser browser = playwright.webkit().launch(new BrowserType.LaunchOptions().setHeadless(false));
 
             BrowserContext context  = browser.newContext();
             Page page = context.newPage();
