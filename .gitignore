@@ -1,0 +1,9 @@
+target/
+test-output/
+artifacts/
+allure-results/
+allure-report/
+.idea/
+*.iml
+.vscode/
+logs/

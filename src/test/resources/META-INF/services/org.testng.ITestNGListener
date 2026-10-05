@@ -1,0 +1,3 @@
+com.playwright.tests.listeners.FailureListener
+com.framework.listeners.TestListener
+com.framework.listeners.RetryTransformer
