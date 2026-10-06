@@ -1,45 +1,85 @@
 # Playwright Hybrid Framework (Java)
 
-Web UI and API test automation on Playwright for Java, TestNG and Allure.
+Web UI and API test automation built with Playwright for Java, TestNG, and Allure.
 
-## Run
+## Prerequisites
+
+- Java 17+
+- Maven 3.9+
+- Optional: [Allure CLI](https://allurereport.org/docs/install/) for local report viewing
+
+## Quick start
+
+```bash
+mvn test
+```
+
+On first run on a new machine, Playwright downloads the required browsers automatically.
+
+## Run commands
 
 | Goal | Command |
 |---|---|
-| All tests (3 parallel forks) | `mvn test` |
-| Smoke only | `mvn test -Dgroups=smoke` |
-| Web or API only | `mvn test -Dgroups=web` / `-Dgroups=api` |
-| Other browser, headed | `mvn test -Dbrowser=firefox -Dheadless=false` |
-| Fewer/more forks | `mvn test -Dforks=1` |
-| Other environment | `mvn test -Denv=staging` (add `staging.*` keys to `config.properties`) |
+| All tests | `mvn test` |
+| Smoke tests only | `mvn test -Dgroups=smoke` |
+| Web tests only | `mvn test -Dgroups=web` |
+| API tests only | `mvn test -Dgroups=api` |
+| Run on Firefox | `mvn test -Dbrowser=firefox` |
+| Run headed | `mvn test -Dheadless=false` |
+| Change parallel forks | `mvn test -Dforks=1` |
+| Override environment | `mvn test -Denv=staging` |
 
-On first run on a new machine, Playwright downloads browsers automatically.
+Environment values are resolved by `Config.get(...)` in this order:
 
-## Report
+1. `-Dkey=value`
+2. `env`-scoped key from `src/test/resources/config.properties` (for example `qa.web.baseUrl`)
+3. plain key from `src/test/resources/config.properties`
 
-Results land in `target/allure-results`. With the [Allure CLI](https://allurereport.org/docs/install/) installed:
+Example:
 
+```properties
+env=qa
+qa.web.baseUrl=https://www.saucedemo.com
+qa.api.baseUrl=https://jsonplaceholder.typicode.com
+qa.web.username=standard_user
+qa.web.password=secret_sauce
 ```
+
+To test another environment, set `-Denv=staging` and add matching `staging.*` keys to `src/test/resources/config.properties`.
+
+## Reports
+
+Allure results are written to `target/allure-results`.
+
+```bash
 allure serve target/allure-results
 ```
 
-Failed web tests also leave `artifacts/screenshots/<test>.png` and `artifacts/traces/<test>.zip`
-(open with `npx playwright show-trace <zip>`).
+When a web test fails, the framework also saves failure artifacts in `artifacts/`:
 
-## Layout
+- screenshots: `artifacts/screenshots/<test>.png`
+- traces: `artifacts/traces/<test>.zip`
 
-- `src/main/java/.../config` - `Config`: -D overrides, then env-prefixed keys, then plain keys
-- `src/main/java/.../core` - `PlaywrightManager`: per-thread browser lifecycle and tracing
-- `src/main/java/.../pages` - page objects
-- `src/main/java/.../api` - `ApiClient`: Playwright request context plus JSON helpers
-- `src/test/java/.../tests` - tests (`web`, `api`), base classes, `FailureListener`
+Open a trace locally with:
+
+```bash
+npx playwright show-trace artifacts/traces/<test>.zip
+```
+
+## Project layout
+
+- `src/main/java/com/playwright/framework/config` - configuration loading (`Config`)
+- `src/main/java/com/playwright/framework/core` - browser lifecycle and tracing (`PlaywrightManager`)
+- `src/main/java/com/playwright/framework/pages` - page object models
+- `src/main/java/com/playwright/framework/api` - API helper (`ApiClient`)
+- `src/test/java/com/playwright/tests` - TestNG tests and listeners
+- `src/test/resources/config.properties` - default configuration values
+- `.github/workflows/tests.yml` - CI workflow for push, PR, and manual runs
 
 ## Parallelism
 
-Playwright Java is not safe to share across threads in one JVM, so parallelism uses Maven Surefire
-forks (one JVM per fork), distributed per test class.
+Playwright Java is not safe to share a single browser instance across threads in one JVM. This project therefore uses Maven Surefire forks, with one JVM per fork, and test classes are distributed across those forks.
 
 ## CI
 
-`.github/workflows/tests.yml` runs on push, PR and manually (with group and browser inputs),
-and uploads Allure results and failure artifacts.
+The GitHub Actions workflow in `.github/workflows/tests.yml` runs on push, pull requests, and manual dispatch, supports a test group and browser input, and uploads both Allure results and failure artifacts.
