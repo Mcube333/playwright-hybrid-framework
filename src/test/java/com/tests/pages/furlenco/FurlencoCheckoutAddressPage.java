@@ -52,6 +52,26 @@ public class FurlencoCheckoutAddressPage extends BasePage {
                 .count();
     }
 
+    private Locator savedAddressWithPincode(String pincode) {
+        return page.locator("button")
+                .filter(new Locator.FilterOptions().setHasText(java.util.regex.Pattern.compile("\\b" + pincode + "\\b")));
+    }
+
+    /** The selected saved address card carries the border-primary class (verified live on stag 2026-10-06). */
+    @Step("Select the saved address with pincode {pincode}")
+    public FurlencoCheckoutAddressPage selectSavedAddressWithPincode(String pincode) {
+        Locator card = savedAddressWithPincode(pincode).first();
+        card.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+        card.click();
+        return this;
+    }
+
+    @Step("Check if the saved address with pincode {pincode} is selected")
+    public boolean isSavedAddressSelected(String pincode) {
+        String cls = savedAddressWithPincode(pincode).first().getAttribute("class");
+        return cls != null && cls.contains("border-primary");
+    }
+
     @Step("Click Add New Address")
     public FurlencoNewAddressPage clickAddNewAddress() {
         page.locator(ADD_NEW_ADDRESS_BUTTON).first().click();

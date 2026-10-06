@@ -53,6 +53,21 @@ public class FurlencoNewAddressPage extends BasePage {
         return this;
     }
 
+    /**
+     * Types a query and returns how many suggestions appear within {@code waitMs}, without failing
+     * when there are none. On stag.furlenco.com the Google Maps area is blank and no suggestions
+     * ever appear (observed 2026-10-06), so callers can tell "no results" from "search unavailable".
+     */
+    @Step("Search address {query} and count suggestions")
+    public int searchAndCountSuggestions(String query, int waitMs) {
+        Locator input = page.locator(SEARCH_INPUT);
+        input.click();
+        input.fill("");
+        input.pressSequentially(query);
+        page.waitForTimeout(waitMs);
+        return page.locator(SUGGESTION).count();
+    }
+
     @Step("Count address suggestions")
     public int getSuggestionCount() {
         return page.locator(SUGGESTION).count();
