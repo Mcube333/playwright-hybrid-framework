@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       groups:
-        description: "TestNG groups to run (smoke, regression, web, api); empty = all"
+        description: "TestNG groups to run (smoke, regression, web, api); empty = smoke only (the default for push and PR runs)"
         required: false
         default: ""
       browser:
@@ -29,7 +29,7 @@ jobs:
           cache: maven
 
       - name: Run tests
-        run: mvn -B test -Dbrowser=${{ inputs.browser || 'chromium' }} -Dgroups="${{ inputs.groups }}"
+        run: mvn -B test -Dheadless=true -Dbrowser=${{ inputs.browser || 'chromium' }} -Dgroups="${{ inputs.groups || 'smoke' }}"
 
       - name: Upload Allure results
         if: always()
