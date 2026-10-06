@@ -7,9 +7,13 @@ on:
   workflow_dispatch:
     inputs:
       groups:
-        description: "TestNG groups to run (smoke, regression, web, api); empty = smoke only (the default for push and PR runs)"
+        description: "TestNG groups to run. Empty = public (sample web + API tests on public sites). The furlenco groups need the staging VPN, so use a self-hosted runner for them."
         required: false
         default: ""
+      runner:
+        description: "Runner label, e.g. a self-hosted runner on the VPN for stag.furlenco.com"
+        required: false
+        default: "ubuntu-latest"
       browser:
         description: "chromium, firefox or webkit"
         required: false
@@ -17,7 +21,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +33,7 @@ jobs:
           cache: maven
 
       - name: Run tests
-        run: mvn -B test -Dheadless=true -Dbrowser=${{ inputs.browser || 'chromium' }} -Dgroups="${{ inputs.groups || 'smoke' }}"
+        run: mvn -B test -Dheadless=true -Dbrowser=${{ inputs.browser || 'chromium' }} -Dgroups="${{ inputs.groups || 'public' }}"
 
       - name: Upload Allure results
         if: always()
