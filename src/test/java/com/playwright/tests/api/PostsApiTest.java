@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PostsApiTest extends BaseApiTest {
 
-    @Test(groups = {"smoke", "api"})
+    @Test(groups = {"smoke", "api", "public"})
     public void getPostReturnsExpectedFields() {
         APIResponse res = api.get("/posts/1");
 
@@ -22,7 +22,7 @@ public class PostsApiTest extends BaseApiTest {
         assertThat(body.has("title")).isTrue();
     }
 
-    @Test(groups = {"regression", "api"})
+    @Test(groups = {"regression", "api", "public"})
     public void createPostEchoesPayload() {
         APIResponse res = api.post("/posts", Map.of("title", "hello", "body", "world", "userId", 1));
 
@@ -32,7 +32,7 @@ public class PostsApiTest extends BaseApiTest {
         assertThat(body.get("id").asInt()).isPositive();
     }
 
-    @Test(groups = {"regression", "api"})
+    @Test(groups = {"regression", "api", "public"})
     public void unknownPostReturns404() {
         assertThat(api.get("/posts/999999").status()).isEqualTo(404);
     }

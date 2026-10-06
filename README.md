@@ -22,6 +22,7 @@ On first run on a new machine, Playwright downloads the required browsers automa
 |---|---|
 | All tests | `mvn test` |
 | Smoke tests only | `mvn test -Dgroups=smoke` |
+| Public sites only (what CI runs by default) | `mvn test -Dgroups=public` |
 | Web tests only | `mvn test -Dgroups=web` |
 | API tests only | `mvn test -Dgroups=api` |
 | Run on Firefox | `mvn test -Dbrowser=firefox` |

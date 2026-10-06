@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LoginTest extends BaseWebTest {
 
-    @Test(groups = {"smoke", "web"})
+    @Test(groups = {"smoke", "web", "public"})
     public void validUserCanLogin() {
         InventoryPage inventory = new LoginPage(page).open()
                 .loginAs(Config.get("web.username"), Config.get("web.password"));
@@ -19,7 +19,7 @@ public class LoginTest extends BaseWebTest {
         assertThat(inventory.productCount()).isGreaterThan(0);
     }
 
-    @Test(groups = {"regression", "web"})
+    @Test(groups = {"regression", "web", "public"})
     public void lockedOutUserSeesError() {
         String error = new LoginPage(page).open()
                 .attemptLogin("locked_out_user", Config.get("web.password"))
@@ -28,7 +28,7 @@ public class LoginTest extends BaseWebTest {
         assertThat(error).contains("locked out");
     }
 
-    @Test(groups = {"regression", "web"})
+    @Test(groups = {"regression", "web", "public"})
     public void userCanAddItemToCart() {
         InventoryPage inventory = new LoginPage(page).open()
                 .loginAs(Config.get("web.username"), Config.get("web.password"))
