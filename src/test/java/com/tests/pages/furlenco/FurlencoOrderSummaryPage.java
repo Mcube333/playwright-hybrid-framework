@@ -39,6 +39,30 @@ public class FurlencoOrderSummaryPage extends BasePage {
         return breakdown.count() > 0 && breakdown.first().isVisible();
     }
 
+    /** The address block is the container holding the Change button (verified live on stag 2026-10-06). */
+    private Locator addressBlock() {
+        return page.locator("div:has(> button:text-is('Change'))").first();
+    }
+
+    @Step("Wait for the Order Summary page")
+    public FurlencoOrderSummaryPage waitForSummary() {
+        page.waitForURL("**/checkout/summary**");
+        addressBlock().waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+        return this;
+    }
+
+    @Step("Read the delivery address shown on the summary")
+    public String getAddressText() {
+        return addressBlock().innerText().replace("Change", "").trim();
+    }
+
+    @Step("Click Change on the delivery address")
+    public FurlencoCheckoutAddressPage clickChangeAddress() {
+        page.locator("button:text-is('Change')").first().click();
+        page.waitForURL("**/checkout/address**");
+        return new FurlencoCheckoutAddressPage(page);
+    }
+
     @Step("Click Proceed to move to Payment")
     public FurlencoPaymentPage clickProceed() {
         LOGGER.info("Clicking Proceed on Order Summary");

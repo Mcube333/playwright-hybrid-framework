@@ -123,7 +123,10 @@ public class FurlencoHomePage extends BasePage {
         openCityModal();
         Locator pincodeInput = page.locator("input[placeholder*='pincode' i]").first();
         pincodeInput.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
-        pincodeInput.fill(pincode);
+        // Real keystrokes: the field ignores a bare fill on stag.furlenco.com (verified 2026-10-06).
+        pincodeInput.click();
+        pincodeInput.fill("");
+        pincodeInput.pressSequentially(pincode);
         pincodeInput.press("Enter");
         page.waitForTimeout(1500);
         return this;
